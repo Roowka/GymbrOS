@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'home.dart';
+import 'features/auth/page/welcome_page.dart';
+import 'features/auth/page/login_page.dart';
+import 'features/auth/page/signup_page.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -13,7 +15,13 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'GymbrOS app'),
+      initialRoute: '/login',
+      routes: {
+        '/login': (context) => LoginPage(), // Login Page
+        '/signup': (context) => SignUpPage(), // Sign Up Page
+        '/home': (context) =>
+            const MyHomePage(title: 'GymbrOS App'), // Home Page
+      },
     );
   }
 }

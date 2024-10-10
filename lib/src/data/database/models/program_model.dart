@@ -1,4 +1,4 @@
-import 'package:gymbros/src/data/database/models/exercice_model.dart';
+import 'package:gymbros/src/data/database/models/exercise_model.dart';
 
 class Program {
   int? id;

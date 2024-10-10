@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'home.dart';
-import 'features/auth/page/welcome_page.dart';
 import 'features/auth/page/login_page.dart';
 import 'features/auth/page/signup_page.dart';
 

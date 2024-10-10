@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'home.dart';
-import 'features/auth/page/login_page.dart';
-import 'features/auth/page/signup_page.dart';
+import 'package:gymbros/src/features/auth/page/login_page.dart';
+import 'package:gymbros/src/features/auth/page/signup_page.dart';
+import 'package:gymbros/src/home.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -16,10 +16,15 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/login',
       routes: {
-        '/login': (context) => LoginPage(), // Login Page
-        '/signup': (context) => SignUpPage(), // Sign Up Page
-        '/home': (context) =>
-            const MyHomePage(title: 'GymbrOS App'), // Home Page
+        '/login': (context) => LoginPage(),
+        '/signup': (context) => SignUpPage(),
+        '/home': (context) => const MyHomePage(title: 'GymbrOS App'),
+      },
+      onUnknownRoute: (settings) {
+        return MaterialPageRoute(
+            builder: (context) => const Scaffold(
+                  body: Center(child: Text('Page Not Found')),
+                ));
       },
     );
   }

@@ -1,10 +1,9 @@
-import 'dart:developer';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DBHelper {
   static Future<Database> openDB() async {
-    log('Creating database...');
+    print('Opening database...');
     final database = openDatabase(
       join(await getDatabasesPath(), 'gymbros_db.db'),
       onCreate: (db, version) async {
@@ -60,7 +59,6 @@ class DBHelper {
       },
       version: 1,
     );
-    log('Database created !');
     return database;
   }
 

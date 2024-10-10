@@ -7,6 +7,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DBHelper.openDB();
   final userDAO = UserDAO();
+  await userDAO.deleteAllUsers();
   await userDAO.insertUser();
+  final users = await userDAO.users();
+  for (final user in users) {
+    print(user.name);
+  }
   runApp(const MyApp());
 }

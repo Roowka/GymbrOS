@@ -7,7 +7,7 @@ enum SessionType {
 class Session {
   int? id;
   String name;
-  Enum type;
+  SessionType type;
   int duration;
 
   Session({

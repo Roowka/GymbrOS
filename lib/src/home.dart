@@ -5,6 +5,7 @@ import 'package:gymbros/src/shared/widget/custom_history_title.dart';
 import 'package:provider/provider.dart';
 import 'package:gymbros/src/features/providers/session_provider.dart';
 import 'package:gymbros/src/features/session/page/session_page.dart';
+import 'package:gymbros/src/features/session/page/session_details_page.dart';
 import 'package:intl/intl.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -20,6 +21,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final programProvider = Provider.of<ProgramProvider>(context);
     final sessionProvider = Provider.of<SessionProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.secondaryColor,
@@ -77,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             // Section historique des séances
             Text(
-              'Historique des Seances',
+              'Historique des Séances',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 10),
@@ -92,6 +94,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     workoutDate: formattedDate,
                     workoutType: session.name,
                     workoutDuration: '${session.duration} Min',
+                    onTap: () {
+                      // Naviguer vers la page des détails de la séance
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              SessionDetailsPage(session: session),
+                        ),
+                      );
+                    },
                   );
                 }).toList(),
               ),
@@ -99,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
             // Section historique des programmes
             Text(
-              'Historique des programmes',
+              'Historique des Programmes',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 10),

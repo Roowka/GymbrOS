@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gymbros/src/data/database/models/Session/session_model.dart';
 import 'package:provider/provider.dart';
-import 'package:gymbros/src/features/providers/seance_provider.dart';
+import 'package:gymbros/src/features/providers/session_provider.dart';
 
 class SessionPage extends StatefulWidget {
   const SessionPage({Key? key}) : super(key: key);

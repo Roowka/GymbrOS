@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gymbros/src/features/providers/seance_provider.dart';
+import 'package:gymbros/src/features/providers/session_provider.dart';
 import 'package:gymbros/src/features/providers/program_provider.dart';
 import 'package:provider/provider.dart';
 import 'src/layout.dart';

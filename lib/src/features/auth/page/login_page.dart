@@ -2,12 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:gymbros/src/shared/widget/custom_button.dart';
 import 'package:gymbros/src/shared/widget/custom_text_field.dart';
 import 'package:gymbros/src/shared/utils/constants.dart';
+import 'package:gymbros/src/features/auth/service/auth_service.dart';
 
 class LoginPage extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
+  final AuthService loginService = AuthService();
+
   LoginPage({super.key});
+
+  void _handleLogin(BuildContext context) async {
+    final email = emailController.text.trim();
+    final password = passwordController.text;
+
+    final result = await loginService.login(
+      email: email,
+      password: password,
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result)));
+
+    if (result == 'Login successful!') {
+      Navigator.pushNamed(context, '/home');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +53,7 @@ class LoginPage extends StatelessWidget {
             Center(
               child: CustomButton(
                 text: 'Login',
-                onPressed: () {
-                  Navigator.pushNamed(context, '/home');
-                },
+                onPressed: () => _handleLogin(context),
               ),
             ),
             Center(

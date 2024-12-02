@@ -2,13 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:gymbros/src/features/auth/page/login_page.dart';
 import 'package:gymbros/src/features/auth/page/signup_page.dart';
 import 'package:gymbros/src/home.dart';
-import 'package:gymbros/src/features/program/page/program_page.dart';
 import 'package:gymbros/src/features/session/page/session_page.dart';
+import 'package:gymbros/src/features/program/page/program_page.dart';
 import 'package:gymbros/src/features/settings/page/settings_page.dart';
-
-void main() {
-  runApp(const MyApp());
-}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -21,7 +17,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: LoginPage(),
+      home: LoginPage(), // Start with the login page
       routes: {
         '/login': (context) => LoginPage(),
         '/signup': (context) => SignUpPage(),
@@ -48,12 +44,12 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int _selectedIndex = 0;
 
-  // Liste des widgets pour chaque onglet
+  // List of widgets for each tab
   static const List<Widget> _pages = <Widget>[
-    MyHomePage(title: 'GymbrOS App'), // Page d'accueil
-    ProgramPage(), // Page des programmes
-    SessionPage(), // Page des sessions
-    SettingsPage(), // Paramètres
+    MyHomePage(title: 'GymbrOS App'), // Page 0
+    SessionPage(), // Page 1
+    ProgramPage(), // Page 2
+    SettingsPage(), // Page 3
   ];
 
   void _onItemTapped(int index) {
@@ -65,31 +61,31 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex], // Affiche la page sélectionnée
+      body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
+            label: 'Accueil',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.fitness_center),
-            label: 'Programs',
+            label: 'Seances',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.history),
-            label: 'Sessions',
+            label: 'Programmes',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
-            label: 'Settings',
+            label: 'Paramètres',
           ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.deepPurple[800],
         unselectedItemColor: Colors.deepPurple[300],
         onTap: _onItemTapped,
-        backgroundColor: Colors.white, // Couleur de fond du Tab Navigator
+        backgroundColor: Colors.white,
       ),
     );
   }

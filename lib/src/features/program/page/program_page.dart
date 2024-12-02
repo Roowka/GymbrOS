@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:gymbros/src/data/database/models/Session/session_model.dart';
+import 'package:gymbros/src/features/providers/program_provider.dart';
+import 'package:gymbros/src/features/providers/seance_provider.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class ProgramPage extends StatefulWidget {
   const ProgramPage({Key? key}) : super(key: key);
@@ -8,163 +13,214 @@ class ProgramPage extends StatefulWidget {
 }
 
 class _ProgramPageState extends State<ProgramPage> {
-  // Liste des exercices disponibles
-  final List<String> availableExercises = [
-    'Pompes',
-    'Squats',
-    'Burpees',
-    'Planches',
-    // Ajoutez d'autres exercices ici
-  ];
+  final _formKey = GlobalKey<FormState>();
 
-  // Exercices sélectionnés
-  List<String> selectedExercises = [];
-
-  // Type de séance
-  String? selectedSessionType;
-
-  // Types de séances disponibles
-  final List<String> sessionTypes = [
-    'AMRAP',
-    'HIIT',
-    'EMOM',
-  ];
-
-  // Paramètres pour chaque exercice
-  Map<String, dynamic> exerciseParams = {};
+  // Champs du formulaire
+  String programName = '';
+  List<Session> selectedSessions = [];
+  DateTime? selectedDate;
+  TimeOfDay? selectedTime;
+  bool isRepeating = false;
+  List<String> repeatDays = [];
 
   @override
   Widget build(BuildContext context) {
+    final sessions = Provider.of<SessionProvider>(context).sessions;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Configurer une séance'),
-      ),
+      appBar: AppBar(title: const Text('Planifier le programme')),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Choix des exercices
-            ExpansionTile(
-              title: Text('Choix des exercices'),
-              children: availableExercises.map((exercise) {
-                return CheckboxListTile(
-                  title: Text(exercise),
-                  value: selectedExercises.contains(exercise),
-                  onChanged: (bool? value) {
-                    setState(() {
-                      if (value == true) {
-                        selectedExercises.add(exercise);
-                        exerciseParams[exercise] = {
-                          'repetitions': 0,
-                          'series': 0,
-                          'rest': 0,
-                        };
-                      } else {
-                        selectedExercises.remove(exercise);
-                        exerciseParams.remove(exercise);
-                      }
-                    });
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Nom du programme
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: 'Nom du programme',
+                  hintText: 'Ex : programme PPL',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Veuillez entrer un nom pour le programme.';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  programName = value!;
+                },
+              ),
+              const SizedBox(height: 20),
+
+              Text(
+                'Sélectionnez une ou plusieurs séances',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 10),
+              sessions.isEmpty
+                  ? const Text('Aucune séance disponible.')
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: sessions.length,
+                      itemBuilder: (context, index) {
+                        final session = sessions[index];
+                        final isSelected = selectedSessions.contains(session);
+
+                        return CheckboxListTile(
+                          title: Text(session.name),
+                          subtitle: Text(
+                              '${session.duration} minutes - ${session.type.toString().split('.').last}'),
+                          value: isSelected,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              if (value == true) {
+                                selectedSessions.add(session);
+                              } else {
+                                selectedSessions.remove(session);
+                              }
+                            });
+                          },
+                        );
+                      },
+                    ),
+              const SizedBox(height: 20),
+
+              // Sélection de la date
+              ListTile(
+                leading: const Icon(Icons.calendar_today),
+                title: Text(selectedDate == null
+                    ? 'Choisissez une date'
+                    : DateFormat('dd/MM/yyyy').format(selectedDate!)),
+                trailing: ElevatedButton(
+                  onPressed: () async {
+                    DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime.now().add(const Duration(days: 365)),
+                    );
+                    if (pickedDate != null) {
+                      setState(() {
+                        selectedDate = pickedDate;
+                      });
+                    }
                   },
-                );
-              }).toList(),
-            ),
-            // Type de séance
-            ListTile(
-              title: Text('Type de séance'),
-              trailing: DropdownButton<String>(
-                value: selectedSessionType,
-                hint: Text('Sélectionnez un type'),
-                items: sessionTypes.map((String type) {
-                  return DropdownMenuItem<String>(
-                    value: type,
-                    child: Text(type),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
+                  child: const Text('Sélectionner'),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Sélection de l'heure
+              ListTile(
+                leading: const Icon(Icons.access_time),
+                title: Text(selectedTime == null
+                    ? 'Choisissez une heure'
+                    : selectedTime!.format(context)),
+                trailing: ElevatedButton(
+                  onPressed: () async {
+                    TimeOfDay? pickedTime = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.now(),
+                    );
+                    if (pickedTime != null) {
+                      setState(() {
+                        selectedTime = pickedTime;
+                      });
+                    }
+                  },
+                  child: const Text('Sélectionner'),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Répétition
+              SwitchListTile(
+                title: const Text('Répéter ce programme'),
+                value: isRepeating,
+                onChanged: (bool value) {
                   setState(() {
-                    selectedSessionType = newValue;
+                    isRepeating = value;
                   });
                 },
               ),
-            ),
-            // Paramètres des exercices
-            ...selectedExercises.map((exercise) {
-              return ExpansionTile(
-                title: Text('Paramètres pour $exercise'),
-                children: [
-                  // Durée ou répétitions
-                  ListTile(
-                    title: Text('Durée (en minutes) ou Répétitions'),
-                    trailing: SizedBox(
-                      width: 150,
-                      child: TextField(
-                        keyboardType: TextInputType.number,
-                        onChanged: (value) {
-                          setState(() {
-                            exerciseParams[exercise]['repetitions'] =
-                                int.tryParse(value) ?? 0;
-                          });
-                        },
-                        decoration: InputDecoration(
-                          hintText: 'Ex: 10 répétitions',
+              if (isRepeating)
+                Wrap(
+                  spacing: 10,
+                  children: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
+                      .map(
+                        (day) => FilterChip(
+                          label: Text(day),
+                          selected: repeatDays.contains(day),
+                          onSelected: (bool selected) {
+                            setState(() {
+                              if (selected) {
+                                repeatDays.add(day);
+                              } else {
+                                repeatDays.remove(day);
+                              }
+                            });
+                          },
                         ),
-                      ),
-                    ),
-                  ),
-                  // Nombre de séries
-                  ListTile(
-                    title: Text('Séries'),
-                    trailing: SizedBox(
-                      width: 100,
-                      child: TextField(
-                        keyboardType: TextInputType.number,
-                        onChanged: (value) {
-                          setState(() {
-                            exerciseParams[exercise]['series'] =
-                                int.tryParse(value) ?? 0;
-                          });
-                        },
-                        decoration: InputDecoration(
-                          hintText: '0',
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Temps de repos
-                  ListTile(
-                    title: Text('Temps de repos (secondes)'),
-                    trailing: SizedBox(
-                      width: 100,
-                      child: TextField(
-                        keyboardType: TextInputType.number,
-                        onChanged: (value) {
-                          setState(() {
-                            exerciseParams[exercise]['rest'] =
-                                int.tryParse(value) ?? 0;
-                          });
-                        },
-                        decoration: InputDecoration(
-                          hintText: '0',
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            }).toList(),
-            // Bouton de validation
-            ElevatedButton(
-              onPressed: () {
-                // Traitement des données saisies
-                print('Exercices sélectionnés: $selectedExercises');
-                print('Type de séance: $selectedSessionType');
-                print('Paramètres des exercices: $exerciseParams');
-                // Vous pouvez maintenant sauvegarder ou planifier la séance
-              },
-              child: Text('Valider la séance'),
-            ),
-          ],
+                      )
+                      .toList(),
+                ),
+
+              const SizedBox(height: 30),
+
+              // Bouton de validation
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _formKey.currentState!.save();
+                      _saveProgram();
+                    }
+                  },
+                  child: const Text('Planifier le programme'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  void _saveProgram() {
+    // Vérifier si tous les champs obligatoires sont remplis
+    if (selectedDate == null || selectedTime == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Veuillez sélectionner une date et une heure.'),
+        ),
+      );
+      return;
+    }
+
+    if (selectedSessions.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Veuillez sélectionner au moins une séance.'),
+        ),
+      );
+      return;
+    }
+
+    final sessionNames =
+        selectedSessions.map((session) => session.name).join(', ');
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Programme "$programName" basé sur les séances "$sessionNames" planifié pour le ${DateFormat('dd/MM/yyyy').format(selectedDate!)} à ${selectedTime!.format(context)}.',
+        ),
+      ),
+    );
+
+    // Retour à la page d'accueil
+    Navigator.pushReplacementNamed(context, '/home');
   }
 }

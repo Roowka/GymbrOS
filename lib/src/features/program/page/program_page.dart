@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gymbros/src/data/database/models/Session/session_model.dart';
+import 'package:gymbros/src/data/database/models/program_model.dart';
 import 'package:gymbros/src/features/providers/program_provider.dart';
-import 'package:gymbros/src/features/providers/seance_provider.dart';
+import 'package:gymbros/src/features/providers/session_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -218,6 +219,21 @@ class _ProgramPageState extends State<ProgramPage> {
           'Programme "$programName" basé sur les séances "$sessionNames" planifié pour le ${DateFormat('dd/MM/yyyy').format(selectedDate!)} à ${selectedTime!.format(context)}.',
         ),
       ),
+    );
+
+    final newProgram = Program(
+      name: programName,
+      duration: selectedSessions.fold<int>(
+        0,
+        (total, session) => total + session.duration,
+      ),
+      userId: 1,
+    );
+
+    Provider.of<ProgramProvider>(context, listen: false).addProgram(newProgram);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Programme ajouté avec succès !')),
     );
 
     // Retour à la page d'accueil

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:gymbros/src/features/providers/program_provider.dart';
 import 'package:gymbros/src/shared/utils/constants.dart';
 import 'package:gymbros/src/shared/widget/custom_history_title.dart';
 import 'package:provider/provider.dart';
-import 'package:gymbros/src/features/providers/seance_provider.dart';
+import 'package:gymbros/src/features/providers/session_provider.dart';
 import 'package:gymbros/src/features/session/page/session_page.dart';
 import 'package:intl/intl.dart';
 
@@ -17,6 +18,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
+    final programProvider = Provider.of<ProgramProvider>(context);
     final sessionProvider = Provider.of<SessionProvider>(context);
     return Scaffold(
       appBar: AppBar(
@@ -75,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             // Section historique des séances
             Text(
-              'Workout History',
+              'Historique des Seances',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 10),
@@ -97,20 +99,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
             // Section historique des programmes
             Text(
-              'Program History',
+              'Historique des programmes',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 10),
-            if (sessionProvider.sessions.isEmpty)
+            if (programProvider.programs.isEmpty)
               const Text('Aucun programme pour le moment.')
             else
               Column(
-                children: sessionProvider.sessions.map((session) {
+                children: programProvider.programs.map((program) {
                   String formattedDate =
                       DateFormat('dd MMM yyyy').format(DateTime.now());
                   return CustomHistoryTitle(
                     workoutDate: formattedDate,
-                    workoutType: session.name,
+                    workoutType: program.name,
                     workoutDuration: 'Program Details',
                   );
                 }).toList(),

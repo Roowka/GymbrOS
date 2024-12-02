@@ -1,10 +1,10 @@
-class Comment {
+class SessionComment {
   int? id;
   int sessionPlanningId;
   String text;
   String type;
 
-  Comment({
+  SessionComment({
     this.id,
     required this.sessionPlanningId,
     required this.text,
@@ -20,8 +20,8 @@ class Comment {
     };
   }
 
-  factory Comment.fromMap(Map<String, dynamic> map) {
-    return Comment(
+  factory SessionComment.fromMap(Map<String, dynamic> map) {
+    return SessionComment(
       id: map['id'],
       sessionPlanningId: map['sessionPlanningId'],
       text: map['text'],

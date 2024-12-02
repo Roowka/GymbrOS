@@ -1,35 +1,26 @@
-import 'package:gymbros/src/data/database/models/exercise_model.dart';
-
 class Program {
   int? id;
+  int userId;
   String name;
   int duration;
-  List<Exercise> exercises;
 
   Program({
     this.id,
+    required this.userId,
     required this.name,
     required this.duration,
-    required this.exercises,
   });
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'name': name,
-      'duration': duration,
-      'exercises': exercises.map((e) => e.toMap()).toList(),
-    };
+    return {'id': id, 'userId': userId, 'name': name, 'duration': duration};
   }
 
   factory Program.fromMap(Map<String, dynamic> map) {
     return Program(
       id: map['id'],
+      userId: map['userId'],
       name: map['name'],
       duration: map['duration'],
-      exercises: List<Exercise>.from(
-        map['exercises']?.map((x) => Exercise.fromMap(x)) ?? [],
-      ),
     );
   }
 }

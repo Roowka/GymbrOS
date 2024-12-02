@@ -3,12 +3,12 @@ import '../db_helper.dart';
 import '../models/user_model.dart';
 
 class UserDAO {
-  Future<int> insertUser() async {
+  Future<int> insertUser(User user) async {
     print('Inserting user...');
     final db = await DBHelper.openDB();
     return await db.insert(
       'User',
-      User(name: 'Aurélien', email: 'aurelien@lu.com').toMap(),
+      User(name: user.name, email: user.email).toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }

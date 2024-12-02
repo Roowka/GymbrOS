@@ -8,10 +8,30 @@ class DBHelper {
       join(await getDatabasesPath(), 'gymbros_db.db'),
       onCreate: (db, version) async {
         await db.execute('''
+          DROP TABLE IF EXISTS Comment;
+          DROP TABLE IF EXISTS Session;
+          DROP TABLE IF EXISTS Exercise;
+          DROP TABLE IF EXISTS User;
+          DROP TABLE IF EXISTS ExerciseComment;
+          DROP TABLE IF EXISTS ExerciseSession;
+          DROP TABLE IF EXISTS SessionPlaning;
+        ''');
+
+        await db.execute('''
           CREATE TABLE User (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             email TEXT NOT NULL
+          )
+        ''');
+
+        await db.execute('''
+          CREATE TABLE Exercise (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            repetitions INTEGER NOT NULL,
+            sets INTEGER NOT NULL,
+            difficulty INTEGER NOT NULL
           )
         ''');
 
@@ -25,25 +45,6 @@ class DBHelper {
             programId INTEGER NOT NULL,
             FOREIGN KEY(userId) REFERENCES User(id),
             FOREIGN KEY(programId) REFERENCES Program(id)
-          )
-        ''');
-
-        await db.execute('''
-          CREATE TABLE Program (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            duration INTEGER NOT NULL,
-            exercises TEXT NOT NULL
-          )
-        ''');
-
-        await db.execute('''
-          CREATE TABLE Exercise (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            repetitions INTEGER NOT NULL,
-            sets INTEGER NOT NULL,
-            difficulty INTEGER NOT NULL
           )
         ''');
 

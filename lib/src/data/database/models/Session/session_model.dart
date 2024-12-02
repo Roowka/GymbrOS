@@ -1,28 +1,28 @@
+enum SessionType {
+  amrap,
+  hiit,
+  emom,
+}
+
 class Session {
   int? id;
   String name;
-  String date;
+  Enum type;
   int duration;
-  int userId;
-  int programId;
 
   Session({
     this.id,
     required this.name,
-    required this.date,
+    required this.type,
     required this.duration,
-    required this.userId,
-    required this.programId,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'name': name,
-      'date': date,
+      'type': type.toString().split('.').last,
       'duration': duration,
-      'userId': userId,
-      'programId': programId,
     };
   }
 
@@ -30,10 +30,10 @@ class Session {
     return Session(
       id: map['id'],
       name: map['name'],
-      date: map['date'],
+      type: SessionType.values.firstWhere(
+        (e) => e.toString().split('.').last == map['type'],
+      ),
       duration: map['duration'],
-      userId: map['userId'],
-      programId: map['programId'],
     );
   }
 }

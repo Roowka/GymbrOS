@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gymbros/src/features/providers/session_provider.dart';
 import 'package:gymbros/src/features/providers/program_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:sqflite/sqflite.dart';
 import 'src/layout.dart';
 import 'src/data/database/db_helper.dart';
 import 'src/data/database/dao/user_dao.dart';
@@ -12,7 +13,10 @@ void main() async {
   await DBHelper.openDB();
   final userDAO = UserDAO();
   await userDAO.deleteAllUsers();
-  await userDAO.insertUser(User(name: 'Julien Tanti le Bg', email: 'test'));
+  await userDAO.insertUser(User(
+      name: 'Julien Tanti le Bg',
+      email: 'julien@gmail.com',
+      password: '123456'));
   final users = await userDAO.users();
   for (final user in users) {
     print(user.name);

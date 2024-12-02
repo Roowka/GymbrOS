@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:sqflite/sqflite.dart';
 import '../db_helper.dart';
 import '../models/user_model.dart';
@@ -9,9 +11,20 @@ class UserDAO {
     print('Inserting user...');
     try {
       final db = await _getDB();
+
+      final hashedPassword =
+          sha256.convert(utf8.encode(user.password)).toString();
+
+      final userToInsert = User(
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        password: hashedPassword,
+      );
+
       return await db.insert(
         'User',
-        user.toMap(),
+        userToInsert.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
     } catch (e) {

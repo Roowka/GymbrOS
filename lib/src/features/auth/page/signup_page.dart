@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gymbros/src/shared/widget/custom_button.dart';
 import 'package:gymbros/src/shared/widget/custom_text_field.dart';
+import 'package:gymbros/src/features/auth/service/auth_service.dart';
 
 class SignUpPage extends StatelessWidget {
   final TextEditingController nameController = TextEditingController();
@@ -9,7 +10,29 @@ class SignUpPage extends StatelessWidget {
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
+  final AuthService signupService = AuthService();
+
   SignUpPage({super.key});
+
+  void _handleSignup(BuildContext context) async {
+    final name = nameController.text.trim();
+    final email = emailController.text.trim();
+    final password = passwordController.text;
+    final confirmPassword = confirmPasswordController.text;
+
+    final result = await signupService.signup(
+      name: name,
+      email: email,
+      password: password,
+      confirmPassword: confirmPassword,
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result)));
+
+    if (result == 'Signup successful!') {
+      Navigator.pushNamed(context, '/home');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,9 +70,7 @@ class SignUpPage extends StatelessWidget {
             Center(
               child: CustomButton(
                 text: 'Continue',
-                onPressed: () {
-                  Navigator.pushNamed(context, '/home');
-                },
+                onPressed: () => _handleSignup(context),
               ),
             ),
           ],

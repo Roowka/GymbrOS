@@ -58,13 +58,11 @@ class _SessionPageState extends State<SessionPage> {
               controller: sessionNameController,
               decoration: InputDecoration(
                 labelText: 'Ex : Séance Full Body',
-                labelStyle: TextStyle(color: AppColors.primaryColor),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.primaryColor),
                 ),
               ),
             ),
@@ -80,11 +78,8 @@ class _SessionPageState extends State<SessionPage> {
               elevation: 2,
               child: ExpansionTile(
                 title: const Text('Exercices Disponibles'),
-                textColor: AppColors.primaryColor,
-                iconColor: AppColors.primaryColor,
                 children: availableExercises.map((exercise) {
                   return CheckboxListTile(
-                    activeColor: AppColors.primaryColor,
                     title: Text(exercise),
                     value: selectedExercises.contains(exercise),
                     onChanged: (bool? value) {
@@ -120,7 +115,6 @@ class _SessionPageState extends State<SessionPage> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.primaryColor),
                 ),
               ),
               items: sessionTypes.map((SessionType type) {
@@ -150,8 +144,6 @@ class _SessionPageState extends State<SessionPage> {
                   elevation: 2,
                   child: ExpansionTile(
                     title: Text('Paramètres pour $exercise'),
-                    textColor: AppColors.primaryColor,
-                    iconColor: AppColors.primaryColor,
                     children: [
                       _buildExerciseParameter(
                         context,
@@ -221,7 +213,6 @@ class _SessionPageState extends State<SessionPage> {
       style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.bold,
-        color: AppColors.primaryColor,
       ),
     );
   }
@@ -239,14 +230,12 @@ class _SessionPageState extends State<SessionPage> {
         onChanged: onChanged,
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: TextStyle(color: AppColors.primaryColor),
           hintText: hint,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: AppColors.primaryColor),
           ),
         ),
       ),

@@ -9,8 +9,11 @@ import 'package:gymbros/src/features/session/page/session_details_page.dart';
 import 'package:intl/intl.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
   final String title;
+  final VoidCallback onToggleTheme; // Ajout du paramètre pour basculer le thème
+
+  const MyHomePage(
+      {super.key, required this.title, required this.onToggleTheme});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -29,7 +32,16 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications),
-            onPressed: () {},
+            onPressed: () {
+              // Ajoutez ici la logique pour gérer les notifications
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Notifications clicked')),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.brightness_6),
+            onPressed: widget.onToggleTheme, // Appel de la fonction toggleTheme
           ),
         ],
       ),
@@ -38,100 +50,126 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Section de création de séance
-            Container(
-              margin: const EdgeInsets.only(bottom: 20),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.primaryColor,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Start Strong and Set Your Fitness Goals',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SessionPage(),
-                        ),
-                      );
-                    },
-                    child: const Text('Start Exercise'),
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: AppColors.primaryColor,
-                      backgroundColor: Colors.white,
-                      textStyle: const TextStyle(fontSize: 16),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Section historique des séances
-            Text(
-              'Historique des Séances',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+            // Section : Démarrage rapide
+            _buildQuickStartSection(context),
+            const SizedBox(height: 20),
+
+            // Section : Historique des séances
+            _buildSectionTitle('Historique des Séances'),
             const SizedBox(height: 10),
-            if (sessionProvider.sessions.isEmpty)
-              const Text('Aucune séance pour le moment.')
-            else
-              Column(
-                children: sessionProvider.sessions.map((session) {
-                  String formattedDate =
-                      DateFormat('dd MMM yyyy').format(DateTime.now());
-                  return CustomHistoryTitle(
-                    workoutDate: formattedDate,
-                    workoutType: session.name,
-                    workoutDuration: '${session.duration} Min',
-                    onTap: () {
-                      // Naviguer vers la page des détails de la séance
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              SessionDetailsPage(session: session),
-                        ),
-                      );
-                    },
-                  );
-                }).toList(),
-              ),
+            _buildSessionHistory(context, sessionProvider),
+
             const SizedBox(height: 30),
 
-            // Section historique des programmes
-            Text(
-              'Historique des Programmes',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+            // Section : Historique des programmes
+            _buildSectionTitle('Historique des Programmes'),
             const SizedBox(height: 10),
-            if (programProvider.programs.isEmpty)
-              const Text('Aucun programme pour le moment.')
-            else
-              Column(
-                children: programProvider.programs.map((program) {
-                  String formattedDate =
-                      DateFormat('dd MMM yyyy').format(DateTime.now());
-                  return CustomHistoryTitle(
-                    workoutDate: formattedDate,
-                    workoutType: program.name,
-                    workoutDuration: 'Program Details',
-                  );
-                }).toList(),
-              ),
+            _buildProgramHistory(context, programProvider),
           ],
         ),
       ),
     );
+  }
+
+  // Widget : Section Démarrage rapide
+  Widget _buildQuickStartSection(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.primaryColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Start Strong and Set Your Fitness Goals',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SessionPage(),
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              foregroundColor: AppColors.primaryColor,
+              backgroundColor: Colors.white,
+              textStyle: const TextStyle(fontSize: 16),
+            ),
+            child: const Text('Start Exercise'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Widget : Titre de section
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: const TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  // Widget : Historique des séances
+  Widget _buildSessionHistory(
+      BuildContext context, SessionProvider sessionProvider) {
+    if (sessionProvider.sessions.isEmpty) {
+      return const Text('Aucune séance pour le moment.');
+    } else {
+      return Column(
+        children: sessionProvider.sessions.map((session) {
+          String formattedDate =
+              DateFormat('dd MMM yyyy').format(DateTime.now());
+          return CustomHistoryTitle(
+            workoutDate: formattedDate,
+            workoutType: session.name,
+            workoutDuration: '${session.duration} Min',
+            onTap: () {
+              // Naviguer vers la page des détails de la séance
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SessionDetailsPage(session: session),
+                ),
+              );
+            },
+          );
+        }).toList(),
+      );
+    }
+  }
+
+  // Widget : Historique des programmes
+  Widget _buildProgramHistory(
+      BuildContext context, ProgramProvider programProvider) {
+    if (programProvider.programs.isEmpty) {
+      return const Text('Aucun programme pour le moment.');
+    } else {
+      return Column(
+        children: programProvider.programs.map((program) {
+          String formattedDate =
+              DateFormat('dd MMM yyyy').format(DateTime.now());
+          return CustomHistoryTitle(
+            workoutDate: formattedDate,
+            workoutType: program.name,
+            workoutDuration: 'Program Details',
+          );
+        }).toList(),
+      );
+    }
   }
 }

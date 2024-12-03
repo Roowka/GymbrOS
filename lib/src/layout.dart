@@ -5,6 +5,7 @@ import 'package:gymbros/src/home.dart';
 import 'package:gymbros/src/features/session/page/session_page.dart';
 import 'package:gymbros/src/features/program/page/program_page.dart';
 import 'package:gymbros/src/features/settings/page/settings_page.dart';
+import 'package:gymbros/src/features/calendar/calendar_page.dart'; // Import de la page calendrier
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -22,6 +23,8 @@ class MyApp extends StatelessWidget {
         '/login': (context) => LoginPage(),
         '/signup': (context) => SignUpPage(),
         '/home': (context) => const MainNavigation(),
+        '/calendar': (context) =>
+            const CalendarPage(), // Ajout de la route calendrier
       },
       onUnknownRoute: (settings) {
         return MaterialPageRoute(
@@ -49,7 +52,8 @@ class _MainNavigationState extends State<MainNavigation> {
     MyHomePage(title: 'GymbrOS App'), // Page 0
     SessionPage(), // Page 1
     ProgramPage(), // Page 2
-    SettingsPage(), // Page 3
+    CalendarPage(), // Page 3 (Ajout de la page calendrier)
+    SettingsPage(), // Page 4
   ];
 
   void _onItemTapped(int index) {
@@ -70,11 +74,15 @@ class _MainNavigationState extends State<MainNavigation> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.fitness_center),
-            label: 'Seances',
+            label: 'Séances',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.history),
             label: 'Programmes',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_today),
+            label: 'Calendrier', // Ajout de l'onglet calendrier
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),

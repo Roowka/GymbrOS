@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gymbros/src/features/program/page/program_planning_page.dart';
 import 'package:gymbros/src/features/providers/program_provider.dart';
 import 'package:gymbros/src/shared/utils/constants.dart';
 import 'package:gymbros/src/shared/widget/custom_history_title.dart';
@@ -120,12 +121,30 @@ class _MyHomePageState extends State<MyHomePage> {
             else
               Column(
                 children: programProvider.programs.map((program) {
-                  String formattedDate =
-                      DateFormat('dd MMM yyyy').format(DateTime.now());
-                  return CustomHistoryTitle(
-                    workoutDate: formattedDate,
-                    workoutType: program.name,
-                    workoutDuration: 'Program Details',
+                  if (program.sessionIds.isEmpty) {
+                    return ListTile(
+                      title: Text(program.name),
+                      subtitle: const Text('Aucune séance dans ce programme'),
+                    );
+                  }
+
+                  return ListTile(
+                    title: Text(program.name),
+                    subtitle: const Text('Programme existant'),
+                    trailing: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProgramPlanningPage(
+                              programName: program.name,
+                              sessionIds: program.sessionIds,
+                            ),
+                          ),
+                        );
+                      },
+                      child: const Text('Planifier le Programme'),
+                    ),
                   );
                 }).toList(),
               ),

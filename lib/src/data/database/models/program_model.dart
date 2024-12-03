@@ -1,26 +1,28 @@
 class Program {
-  int? id;
-  int userId;
-  String name;
-  int duration;
+  final String name;
+  final List<int> sessionIds;
+  final DateTime? createdAt;
 
   Program({
-    this.id,
-    required this.userId,
     required this.name,
-    required this.duration,
+    required this.sessionIds,
+    this.createdAt,
   });
 
   Map<String, dynamic> toMap() {
-    return {'id': id, 'userId': userId, 'name': name, 'duration': duration};
+    return {
+      'name': name,
+      'sessionIds': sessionIds,
+      'createdAt': createdAt?.toIso8601String(),
+    };
   }
 
   factory Program.fromMap(Map<String, dynamic> map) {
     return Program(
-      id: map['id'],
-      userId: map['userId'],
       name: map['name'],
-      duration: map['duration'],
+      sessionIds: List<int>.from(map['sessionIds']),
+      createdAt:
+          map['createdAt'] != null ? DateTime.parse(map['createdAt']) : null,
     );
   }
 }

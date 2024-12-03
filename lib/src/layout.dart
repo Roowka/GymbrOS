@@ -5,6 +5,7 @@ import 'package:gymbros/src/home.dart';
 import 'package:gymbros/src/features/session/page/session_page.dart';
 import 'package:gymbros/src/features/program/page/program_page.dart';
 import 'package:gymbros/src/features/settings/page/settings_page.dart';
+import 'package:gymbros/src/features/calendar/calendar_page.dart'; // Import de la page calendrier
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -98,6 +99,8 @@ class _MyAppState extends State<MyApp> {
         '/login': (context) => LoginPage(),
         '/signup': (context) => SignUpPage(),
         '/home': (context) => MainNavigation(onToggleTheme: toggleTheme),
+        '/calendar': (context) =>
+            const CalendarPage(), // Ajout de la route calendrier
       },
       onUnknownRoute: (settings) {
         return MaterialPageRoute(
@@ -160,6 +163,10 @@ class _MainNavigationState extends State<MainNavigation> {
           BottomNavigationBarItem(
             icon: Icon(Icons.history),
             label: 'Programmes',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_today),
+            label: 'Calendrier', // Ajout de l'onglet calendrier
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),

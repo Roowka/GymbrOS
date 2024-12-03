@@ -12,10 +12,8 @@ import 'package:intl/intl.dart';
 
 class MyHomePage extends StatefulWidget {
   final String title;
-  final VoidCallback onToggleTheme; // Ajout du paramètre pour basculer le thème
 
-  const MyHomePage(
-      {super.key, required this.title, required this.onToggleTheme});
+  const MyHomePage({super.key, required this.title});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -41,10 +39,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 const SnackBar(content: Text('Notifications clicked')),
               );
             },
-          ),
-          IconButton(
-            icon: const Icon(Icons.brightness_6),
-            onPressed: widget.onToggleTheme, // Appel de la fonction toggleTheme
           ),
         ],
       ),

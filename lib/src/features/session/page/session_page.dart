@@ -3,6 +3,7 @@ import 'package:gymbros/src/data/database/models/Session/session_model.dart';
 import 'package:provider/provider.dart';
 import 'package:gymbros/src/shared/utils/constants.dart';
 import 'package:gymbros/src/features/providers/session_provider.dart';
+import 'package:gymbros/src/features/session/service/session_service.dart';
 
 class SessionPage extends StatefulWidget {
   const SessionPage({Key? key}) : super(key: key);
@@ -23,6 +24,7 @@ class _SessionPageState extends State<SessionPage> {
 
   // Champ pour le nom de la séance
   final TextEditingController sessionNameController = TextEditingController();
+  final SessionService sessionService = SessionService();
 
   // Type de séance
   SessionType? selectedSessionType;
@@ -56,13 +58,11 @@ class _SessionPageState extends State<SessionPage> {
               controller: sessionNameController,
               decoration: InputDecoration(
                 labelText: 'Ex : Séance Full Body',
-                labelStyle: TextStyle(color: AppColors.primaryColor),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.primaryColor),
                 ),
               ),
             ),
@@ -78,11 +78,8 @@ class _SessionPageState extends State<SessionPage> {
               elevation: 2,
               child: ExpansionTile(
                 title: const Text('Exercices Disponibles'),
-                textColor: AppColors.primaryColor,
-                iconColor: AppColors.primaryColor,
                 children: availableExercises.map((exercise) {
                   return CheckboxListTile(
-                    activeColor: AppColors.primaryColor,
                     title: Text(exercise),
                     value: selectedExercises.contains(exercise),
                     onChanged: (bool? value) {
@@ -118,7 +115,6 @@ class _SessionPageState extends State<SessionPage> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.primaryColor),
                 ),
               ),
               items: sessionTypes.map((SessionType type) {
@@ -148,8 +144,6 @@ class _SessionPageState extends State<SessionPage> {
                   elevation: 2,
                   child: ExpansionTile(
                     title: Text('Paramètres pour $exercise'),
-                    textColor: AppColors.primaryColor,
-                    iconColor: AppColors.primaryColor,
                     children: [
                       _buildExerciseParameter(
                         context,
@@ -219,7 +213,6 @@ class _SessionPageState extends State<SessionPage> {
       style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.bold,
-        color: AppColors.primaryColor,
       ),
     );
   }
@@ -237,14 +230,12 @@ class _SessionPageState extends State<SessionPage> {
         onChanged: onChanged,
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: TextStyle(color: AppColors.primaryColor),
           hintText: hint,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: AppColors.primaryColor),
           ),
         ),
       ),
@@ -280,6 +271,12 @@ class _SessionPageState extends State<SessionPage> {
     );
 
     Provider.of<SessionProvider>(context, listen: false).addSession(newSession);
+    // CREATION DE LA SESSION EN BDD
+    sessionService.createSession(
+      newSession: newSession,
+      selectedExercises: selectedExercises,
+      exerciseParams: exerciseParams,
+    );
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Séance sauvegardée avec succès')),
@@ -291,14 +288,24 @@ class _SessionPageState extends State<SessionPage> {
   int _calculateTotalDuration() {
     int totalDuration = 0;
 
-    for (var exercise in selectedExercises) {
+    for (String exercise in selectedExercises) {
       int repetitions = exerciseParams[exercise]['repetitions'];
       int series = exerciseParams[exercise]['series'];
       int rest = exerciseParams[exercise]['rest'];
 
-      int exerciseDuration =
-          (repetitions * series) + ((series - 1) * rest ~/ 60);
-      totalDuration += exerciseDuration;
+// 'Pompes',
+//     'Squats',
+//     'Burpees',
+//     'Planches',
+
+//       int exerciseDuration = 0
+//       if(exercise == 'Planches'){
+//         exerciseDuration = (repetitions * series) + ((series - 1) * rest ~/ 60);
+//       } else {
+//         exerciseDuration =
+//       }
+//           (repetitions * series) + ((series - 1) * rest ~/ 60);
+//       totalDuration += exerciseDuration;
     }
 
     return totalDuration;

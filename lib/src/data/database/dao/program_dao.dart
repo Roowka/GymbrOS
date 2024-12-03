@@ -37,12 +37,19 @@ class ProgramDAO {
     print('Updating program...');
     try {
       final db = await _getDB();
+
+      if (program.id == null) {
+        print('Error: Program id is null');
+        return false;
+      }
+
       final result = await db.update(
         'program',
         program.toMap(),
         where: 'id = ?',
         whereArgs: [program.id],
       );
+
       return result > 0;
     } catch (e) {
       print('Error updating program: $e');

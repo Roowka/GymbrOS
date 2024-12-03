@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:gymbros/src/data/database/models/program_model.dart';
+
+class Program {
+  final String name;
+  final List<int> sessionIds;
+
+  Program({required this.name, required this.sessionIds});
+}
 
 class ProgramProvider with ChangeNotifier {
-  List<Program> _programs = [];
+  final List<Program> _programs = [];
 
-  List<Program> get programs => _programs;
+  List<Program> get programs => List.unmodifiable(_programs);
 
   void addProgram(Program program) {
-    _programs.insert(0, program);
-    notifyListeners();
+    _programs.add(program);
+    notifyListeners(); // Notifie les widgets dépendants
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:gymbros/src/features/providers/session_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:gymbros/src/features/program/page/program_planning_page.dart';
+import 'package:gymbros/src/features/providers/session_provider.dart';
+import 'package:gymbros/src/features/providers/program_provider.dart'; // Import ProgramProvider
 
 class ProgramPage extends StatefulWidget {
   const ProgramPage({Key? key}) : super(key: key);
@@ -17,6 +17,8 @@ class _ProgramPageState extends State<ProgramPage> {
   @override
   Widget build(BuildContext context) {
     final sessionProvider = Provider.of<SessionProvider>(context);
+    final programProvider =
+        Provider.of<ProgramProvider>(context, listen: false);
     final sessions = sessionProvider.sessions;
 
     return Scaffold(
@@ -77,23 +79,24 @@ class _ProgramPageState extends State<ProgramPage> {
             if (selectedSessionIds.isEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                    content:
-                        Text('Veuillez sélectionner au moins une séance.')),
+                  content: Text('Veuillez sélectionner au moins une séance.'),
+                ),
               );
               return;
             }
 
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ProgramPlanningPage(
-                  programName: programNameController.text,
-                  sessionIds: selectedSessionIds,
-                ),
+            // Ajouter le programme au Provider
+            programProvider.addProgram(
+              Program(
+                name: programNameController.text,
+                sessionIds: selectedSessionIds,
               ),
             );
+
+            // Retour à la page d'accueil
+            Navigator.pushReplacementNamed(context, '/home');
           },
-          child: const Text('Planifier le Programme'),
+          child: const Text('Créer le Programme'),
         ),
       ),
     );

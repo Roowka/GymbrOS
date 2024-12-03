@@ -5,17 +5,19 @@ enum SessionType {
 }
 
 class Session {
-  int? id;
+  static int _idCounter = 0;
+
+  int id;
   String name;
   SessionType type;
   int duration;
 
   Session({
-    this.id,
+    int? id,
     required this.name,
     required this.type,
     required this.duration,
-  });
+  }) : id = id ?? _idCounter++; // Génère un `id` si non fourni
 
   Map<String, dynamic> toMap() {
     return {

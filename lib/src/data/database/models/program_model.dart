@@ -1,26 +1,35 @@
+import 'dart:convert';
+
 class Program {
-  int? id;
-  int userId;
-  String name;
-  int duration;
+  final int? id; // Ajout de l'identifiant
+  final String name;
+  final List<int> sessionIds;
+  final DateTime? createdAt;
 
   Program({
-    this.id,
-    required this.userId,
+    this.id, // Champ facultatif
     required this.name,
-    required this.duration,
+    required this.sessionIds,
+    this.createdAt,
   });
 
   Map<String, dynamic> toMap() {
-    return {'id': id, 'userId': userId, 'name': name, 'duration': duration};
+    return {
+      'id': id, // Inclure l'id dans la map
+      'name': name,
+      'sessionIds': jsonEncode(sessionIds), // Conversion en JSON
+      'createdAt': createdAt?.toIso8601String(),
+    };
   }
 
   factory Program.fromMap(Map<String, dynamic> map) {
     return Program(
-      id: map['id'],
-      userId: map['userId'],
+      id: map['id'], // Extraire l'id
       name: map['name'],
-      duration: map['duration'],
+      sessionIds: List<int>.from(
+          jsonDecode(map['sessionIds'])), // Conversion JSON vers List<int>
+      createdAt:
+          map['createdAt'] != null ? DateTime.parse(map['createdAt']) : null,
     );
   }
 }

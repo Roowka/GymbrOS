@@ -18,13 +18,12 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: LoginPage(), // Start with the login page
+      home: LoginPage(),
       routes: {
         '/login': (context) => LoginPage(),
         '/signup': (context) => SignUpPage(),
         '/home': (context) => const MainNavigation(),
-        '/calendar': (context) =>
-            const CalendarPage(), // Ajout de la route calendrier
+        '/calendar': (context) => const CalendarPage(),
       },
       onUnknownRoute: (settings) {
         return MaterialPageRoute(

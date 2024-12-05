@@ -34,7 +34,6 @@ class _MyHomePageState extends State<MyHomePage> {
           IconButton(
             icon: const Icon(Icons.notifications),
             onPressed: () {
-              // Ajoutez ici la logique pour gérer les notifications
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Notifications clicked')),
               );
@@ -157,7 +156,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 subtitle: const Text('Programme existant'),
                 trailing: ElevatedButton(
                   onPressed: () {
-                    // Naviguer vers la page des détails du programme
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -243,7 +241,6 @@ class _MyHomePageState extends State<MyHomePage> {
             workoutType: session.name,
             workoutDuration: '${session.duration} Min',
             onTap: () {
-              // Naviguer vers la page des détails de la séance
               Navigator.push(
                 context,
                 MaterialPageRoute(

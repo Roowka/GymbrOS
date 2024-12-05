@@ -3,7 +3,6 @@ import 'package:sqflite/sqflite.dart';
 
 class DBHelper {
   static Future<Database> openDB() async {
-    print('Opening database...');
     final database = openDatabase(
       join(await getDatabasesPath(), 'gymbros_db.db'),
       onCreate: (db, version) async {

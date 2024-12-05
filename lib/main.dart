@@ -23,16 +23,16 @@ void main() async {
   // await exerciseDAO.insertExercise(Exercise(name: 'Planches', difficulty: 7));
 
 // AJOUT USER
-  // final userDAO = UserDAO();
+  final userDAO = UserDAO();
   // await userDAO.deleteAllUsers();
   // await userDAO.insertUser(User(
   //     name: 'Julien Tanti le Bg',
   //     email: 'julien@gmail.com',
   //     password: '123456'));
-  // final users = await userDAO.users();
-  // for (final user in users) {
-  //   print(user.name);
-  // }
+  final users = await userDAO.users();
+  for (final user in users) {
+    print(user.toMap());
+  }
 
   runApp(MultiProvider(
     providers: [

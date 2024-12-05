@@ -34,10 +34,8 @@ class AuthService {
     try {
       final userDao = UserDAO();
 
-      final hashedPassword = sha256.convert(utf8.encode(password)).toString();
-
       await userDao.insertUser(
-        User(name: name, email: email, password: hashedPassword),
+        User(name: name, email: email, password: password),
       );
 
       return 'Signup successful!';

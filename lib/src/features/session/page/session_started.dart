@@ -99,6 +99,20 @@ class _SessionStartedPageState extends State<SessionStartedPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.exercises.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(widget.session.name),
+        ),
+        body: const Center(
+          child: Text(
+            "Aucun exercice associé à cette séance.",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
+      );
+    }
+
     final currentExercise = widget.exercises[currentExerciseIndex];
     final isTimeBased = currentExercise.repetitions == null;
 
@@ -128,8 +142,7 @@ class _SessionStartedPageState extends State<SessionStartedPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    // "Exercice : ${currentExercise.name}",
-                    "Nom exo",
+                    "Exercice : ${currentExercise.sessionId}",
                     style: const TextStyle(fontSize: 24),
                   ),
                   const SizedBox(height: 16),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gymbros/src/shared/utils/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:gymbros/src/features/providers/calendar_provider.dart';
@@ -25,7 +26,7 @@ class _CalendarPageState extends State<CalendarPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Calendrier'),
-        backgroundColor: Colors.pink,
+        backgroundColor: AppColors.secondaryColor,
       ),
       body: Column(
         children: [

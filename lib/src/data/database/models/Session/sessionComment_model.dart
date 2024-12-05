@@ -1,12 +1,12 @@
-class Comment {
+class SessionComment {
   int? id;
-  int sessionId;
+  int sessionPlanningId;
   String text;
   String type;
 
-  Comment({
+  SessionComment({
     this.id,
-    required this.sessionId,
+    required this.sessionPlanningId,
     required this.text,
     required this.type,
   });
@@ -14,16 +14,16 @@ class Comment {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'sessionId': sessionId,
+      'sessionId': sessionPlanningId,
       'text': text,
       'type': type,
     };
   }
 
-  factory Comment.fromMap(Map<String, dynamic> map) {
-    return Comment(
+  factory SessionComment.fromMap(Map<String, dynamic> map) {
+    return SessionComment(
       id: map['id'],
-      sessionId: map['sessionId'],
+      sessionPlanningId: map['sessionPlanningId'],
       text: map['text'],
       type: map['type'],
     );

@@ -1,35 +1,35 @@
-import 'package:gymbros/src/data/database/models/exercice_model.dart';
+import 'dart:convert';
 
 class Program {
-  int? id;
-  String name;
-  int duration;
-  List<Exercise> exercises;
+  final int? id; // Ajout de l'identifiant
+  final String name;
+  final List<int> sessionIds;
+  final DateTime? createdAt;
 
   Program({
-    this.id,
+    this.id, // Champ facultatif
     required this.name,
-    required this.duration,
-    required this.exercises,
+    required this.sessionIds,
+    this.createdAt,
   });
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
+      'id': id, // Inclure l'id dans la map
       'name': name,
-      'duration': duration,
-      'exercises': exercises.map((e) => e.toMap()).toList(),
+      'sessionIds': jsonEncode(sessionIds), // Conversion en JSON
+      'createdAt': createdAt?.toIso8601String(),
     };
   }
 
   factory Program.fromMap(Map<String, dynamic> map) {
     return Program(
-      id: map['id'],
+      id: map['id'], // Extraire l'id
       name: map['name'],
-      duration: map['duration'],
-      exercises: List<Exercise>.from(
-        map['exercises']?.map((x) => Exercise.fromMap(x)) ?? [],
-      ),
+      sessionIds: List<int>.from(
+          jsonDecode(map['sessionIds'])), // Conversion JSON vers List<int>
+      createdAt:
+          map['createdAt'] != null ? DateTime.parse(map['createdAt']) : null,
     );
   }
 }

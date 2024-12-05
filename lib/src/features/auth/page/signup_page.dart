@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:gymbros/src/features/providers/user_provider.dart';
 import 'package:gymbros/src/shared/widget/custom_button.dart';
 import 'package:gymbros/src/shared/widget/custom_text_field.dart';
 import 'package:gymbros/src/features/auth/service/auth_service.dart';
+import 'package:provider/provider.dart';
 
 class SignUpPage extends StatelessWidget {
   final TextEditingController nameController = TextEditingController();
@@ -26,6 +28,10 @@ class SignUpPage extends StatelessWidget {
       password: password,
       confirmPassword: confirmPassword,
     );
+
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    await userProvider.loadUser(email);
 
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result)));
 

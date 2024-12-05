@@ -8,12 +8,15 @@ class UserProvider with ChangeNotifier {
   User? _user;
   User? get user => _user;
 
-  Future<void> loadUser() async {
+  Future<void> loadUser(String email) async {
     final users = await _userDAO.users();
-    if (users.isNotEmpty) {
-      _user = users.first;
-    } else {
-      _user = null;
+    for (final user in users) {
+      if (user.email == email) {
+        _user = user;
+        break;
+      } else {
+        _user = null;
+      }
     }
     notifyListeners();
   }
@@ -25,7 +28,7 @@ class UserProvider with ChangeNotifier {
 
   Future<void> addUser(User user) async {
     await _userDAO.insertUser(user);
-    await loadUser();
+    await loadUser(user.email);
   }
 
   Future<void> logoutUser() async {

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:gymbros/src/data/database/dao/user_dao.dart';
 import 'package:gymbros/src/data/database/models/user_model.dart';
+import 'package:gymbros/src/features/providers/user_provider.dart';
 
 class AuthService {
   Future<String> signup({
@@ -32,9 +33,9 @@ class AuthService {
     }
 
     try {
-      final userDao = UserDAO();
+      final userProvider = UserProvider();
 
-      await userDao.insertUser(
+      await userProvider.addUser(
         User(name: name, email: email, password: password),
       );
 

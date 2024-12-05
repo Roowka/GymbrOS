@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gymbros/src/features/providers/calendar_provider.dart';
 import 'package:gymbros/src/features/providers/session_provider.dart';
 import 'package:gymbros/src/features/providers/program_provider.dart';
+import 'package:gymbros/src/features/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'src/layout.dart';
@@ -39,6 +40,7 @@ void main() async {
       ChangeNotifierProvider(create: (_) => ProgramProvider()),
       ChangeNotifierProvider(create: (_) => SessionProvider()),
       ChangeNotifierProvider(create: (_) => CalendarProvider()),
+      ChangeNotifierProvider(create: (_) => UserProvider()),
     ],
     child: MyApp(),
   ));

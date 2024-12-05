@@ -3,6 +3,7 @@ import 'package:gymbros/src/features/program/page/program_details_page.dart';
 import 'package:gymbros/src/features/providers/program_provider.dart';
 import 'package:gymbros/src/features/providers/session_provider.dart';
 import 'package:gymbros/src/features/providers/calendar_provider.dart';
+import 'package:gymbros/src/features/providers/user_provider.dart';
 import 'package:gymbros/src/shared/utils/constants.dart';
 import 'package:gymbros/src/shared/widget/custom_history_title.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +26,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final programProvider = Provider.of<ProgramProvider>(context);
     final sessionProvider = Provider.of<SessionProvider>(context);
     final calendarProvider = Provider.of<CalendarProvider>(context);
+    final userProvider = Provider.of<UserProvider>(context);
 
     return Scaffold(
       appBar: AppBar(

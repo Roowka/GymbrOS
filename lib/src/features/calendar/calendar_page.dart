@@ -19,19 +19,13 @@ class _CalendarPageState extends State<CalendarPage> {
     final calendarProvider = Provider.of<CalendarProvider>(context);
     final events = calendarProvider.events;
 
-    // Group events by date for quick lookup
-    final Map<DateTime, List<CalendarEvent>> eventsByDate = {};
-    for (var event in events) {
-      final date = DateTime(event.date.year, event.date.month, event.date.day);
-      if (!eventsByDate.containsKey(date)) {
-        eventsByDate[date] = [];
-      }
-      eventsByDate[date]!.add(event);
-    }
+    final Map<DateTime, List<CalendarEvent>> eventsByDate =
+        _groupEventsByDate(events);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Calendrier'),
+        backgroundColor: Colors.pink,
       ),
       body: Column(
         children: [
@@ -68,34 +62,32 @@ class _CalendarPageState extends State<CalendarPage> {
             eventLoader: (day) {
               final normalizedDay =
                   DateTime(day.year, day.month, day.day); // Remove time
-              return eventsByDate[normalizedDay] ?? [];
+              final dayEvents = eventsByDate[normalizedDay];
+              return dayEvents ?? [];
             },
-            calendarStyle: const CalendarStyle(
-              markerDecoration: BoxDecoration(
-                color: Colors.red,
-                shape: BoxShape.circle,
-              ),
-              selectedDecoration: BoxDecoration(
-                color: Colors.deepPurple,
-                shape: BoxShape.circle,
-              ),
-              todayDecoration: BoxDecoration(
-                color: Colors.deepPurpleAccent,
-                shape: BoxShape.circle,
-              ),
-            ),
           ),
           const SizedBox(height: 10),
           Expanded(
             child: _selectedDay == null
                 ? const Center(child: Text('Sélectionnez une date.'))
-                : _buildEventList(
-                    eventsByDate[_selectedDay!] ?? [],
-                  ),
+                : _buildEventList(eventsByDate[_selectedDay!] ?? []),
           ),
         ],
       ),
     );
+  }
+
+  Map<DateTime, List<CalendarEvent>> _groupEventsByDate(
+      List<CalendarEvent> events) {
+    final Map<DateTime, List<CalendarEvent>> eventsByDate = {};
+    for (var event in events) {
+      final date = DateTime(event.date.year, event.date.month, event.date.day);
+      if (!eventsByDate.containsKey(date)) {
+        eventsByDate[date] = [];
+      }
+      eventsByDate[date]!.add(event);
+    }
+    return eventsByDate;
   }
 
   Widget _buildEventList(List<CalendarEvent> events) {
@@ -107,12 +99,16 @@ class _CalendarPageState extends State<CalendarPage> {
       itemCount: events.length,
       itemBuilder: (context, index) {
         final event = events[index];
-        return ListTile(
-          leading: const Icon(Icons.event, color: Colors.deepPurple),
-          title: Text(event.sessionName),
-          subtitle: Text(event.programName),
-          trailing: Text(
-            '${event.date.hour}:${event.date.minute.toString().padLeft(2, '0')}',
+        return Card(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          elevation: 3,
+          child: ListTile(
+            leading: const Icon(Icons.event, color: Colors.pink),
+            title: Text(
+              event.sessionName,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            subtitle: Text('Programme : ${event.programName}'),
           ),
         );
       },

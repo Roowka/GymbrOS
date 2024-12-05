@@ -18,12 +18,23 @@ class CalendarProvider with ChangeNotifier {
   List<CalendarEvent> get events => List.unmodifiable(_events);
 
   void addEvent(CalendarEvent event) {
-    _events.add(event);
+    final normalizedEvent = CalendarEvent(
+      date: DateTime(event.date.year, event.date.month, event.date.day),
+      programName: event.programName,
+      sessionName: event.sessionName,
+    );
+
+    _events.add(normalizedEvent);
+    debugPrint(
+        'Event added: ${normalizedEvent.sessionName} on ${normalizedEvent.date}');
     notifyListeners();
   }
 
   List<CalendarEvent> eventsOnDate(DateTime date) {
-    return _events.where((event) => isSameDay(event.date, date)).toList();
+    final normalizedDate = DateTime(date.year, date.month, date.day);
+    return _events
+        .where((event) => isSameDay(event.date, normalizedDate))
+        .toList();
   }
 
   bool isSameDay(DateTime a, DateTime b) {

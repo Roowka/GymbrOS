@@ -110,8 +110,10 @@ class _ProgramPlanningPageState extends State<ProgramPlanningPage> {
                     child: const Text('Planifier'),
                   ),
                   subtitle: sessionSchedule[sessionId] == null
-                      ? const Text('Aucune date sélectionnée',
-                          style: TextStyle(color: Colors.grey))
+                      ? const Text(
+                          'Aucune date sélectionnée',
+                          style: TextStyle(color: Colors.grey),
+                        )
                       : Text(
                           'Prévu le ${sessionSchedule[sessionId]!.toLocal()}'
                               .split(' ')[0],
@@ -139,13 +141,14 @@ class _ProgramPlanningPageState extends State<ProgramPlanningPage> {
                       Provider.of<CalendarProvider>(context, listen: false);
 
                   sessionSchedule.forEach((sessionId, date) {
-                    calendarProvider.addEvent(
-                      CalendarEvent(
-                        date: date,
-                        programName: widget.programName,
-                        sessionName: 'Séance $sessionId',
-                      ),
+                    final event = CalendarEvent(
+                      date: DateTime(date.year, date.month, date.day),
+                      programName: widget.programName,
+                      sessionName: 'Séance $sessionId',
                     );
+                    debugPrint(
+                        'Adding event: ${event.sessionName} on ${event.date}');
+                    calendarProvider.addEvent(event);
                   });
 
                   Navigator.pushNamed(context, '/home');

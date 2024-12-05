@@ -1,54 +1,110 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gymbros/src/features/auth/page/login_page.dart';
-import 'package:gymbros/src/shared/widget/custom_button.dart';
-import 'package:gymbros/src/shared/widget/custom_text_field.dart'; // Adjust the import path based on your project structure
+import 'package:gymbros/src/features/auth/service/auth_service.dart';
+import 'package:gymbros/src/features/providers/user_provider.dart';
+import 'package:mockito/mockito.dart';
+import 'package:mockito/annotations.dart';
+import 'package:provider/provider.dart';
 
+import 'login_page_test.mocks.dart';
+
+@GenerateMocks([AuthService, UserProvider])
 void main() {
-  // Helper function to create and return the tested widget
-  Widget makeTestableWidget() => MaterialApp(home: LoginPage());
+  late MockAuthService mockAuthService;
+  late MockUserProvider mockUserProvider;
+
+  setUp(() {
+    mockAuthService = MockAuthService();
+    mockUserProvider = MockUserProvider();
+  });
+
+  Widget createTestWidget(Widget child) {
+    return MaterialApp(
+      home: MultiProvider(
+        providers: [
+          Provider<AuthService>.value(value: mockAuthService),
+          ChangeNotifierProvider<UserProvider>.value(value: mockUserProvider),
+        ],
+        child: child,
+      ),
+    );
+  }
 
   group('LoginPage Tests', () {
-    testWidgets('LoginPage UI Test', (WidgetTester tester) async {
-      await tester.pumpWidget(makeTestableWidget());
+    testWidgets('renders login page elements', (WidgetTester tester) async {
+      await tester.pumpWidget(createTestWidget(LoginPage()));
 
-      // Check for logo image
-      expect(find.byType(Image), findsOneWidget);
+      // Check for email field
+      expect(find.byType(TextField), findsNWidgets(2));
+      expect(find.text('Enter email address'), findsOneWidget);
 
-      // Check for text fields
-      expect(find.widgetWithText(CustomTextField, 'Enter email address'),
-          findsOneWidget);
-      expect(find.widgetWithText(CustomTextField, 'Enter password'),
-          findsOneWidget);
+      // Check for password field
+      expect(find.text('Enter password'), findsOneWidget);
 
       // Check for login button
-      expect(find.widgetWithText(CustomButton, 'Login'), findsOneWidget);
+      expect(find.text('Login'), findsOneWidget);
 
-      // Check for create account link
+      // Check for signup link
       expect(
           find.text('Don\'t have an account? Create Account'), findsOneWidget);
     });
 
-    testWidgets('Navigate to Home on Login', (WidgetTester tester) async {
-      await tester.pumpWidget(makeTestableWidget());
+    testWidgets('shows error when login fails', (WidgetTester tester) async {
+      // Mock a failed login
+      when(mockAuthService.login(
+              email: anyNamed('email'), password: anyNamed('password')))
+          .thenAnswer((_) async => 'Invalid credentials');
 
-      // Assuming that '/home' navigation works correctly; here we simply test the button press.
-      await tester.tap(find.widgetWithText(CustomButton, 'Login'));
-      await tester
-          .pumpAndSettle(); // This simulates the passage of time until all animations are complete.
+      await tester.pumpWidget(createTestWidget(LoginPage()));
 
-      // You would normally check navigation occurred here, but that requires a mocked Navigator observer.
-      // For simplicity, this step is omitted.
+      // Enter email and password
+      await tester.enterText(find.byType(TextField).at(0), 'test@example.com');
+      await tester.enterText(find.byType(TextField).at(1), 'wrongpassword');
+
+      // Tap login button
+      await tester.tap(find.text('Login'));
+      await tester.pumpAndSettle();
+
+      // Verify snackbar with error message
+      expect(find.text('Invalid credentials'), findsOneWidget);
     });
 
-    testWidgets('Navigate to SignUp Page', (WidgetTester tester) async {
-      await tester.pumpWidget(makeTestableWidget());
+    testWidgets('navigates to home page on successful login',
+        (WidgetTester tester) async {
+      // Mock a successful login
+      when(mockAuthService.login(
+              email: anyNamed('email'), password: anyNamed('password')))
+          .thenAnswer((_) async => 'Login successful!');
+      when(mockUserProvider.loadUser('test@example.com'))
+          .thenAnswer((_) async {});
 
+      await tester.pumpWidget(createTestWidget(LoginPage()));
+
+      // Enter email and password
+      await tester.enterText(find.byType(TextField).at(0), 'test@example.com');
+      await tester.enterText(find.byType(TextField).at(1), 'correctpassword');
+
+      // Tap login button
+      await tester.tap(find.text('Login'));
+      await tester.pumpAndSettle();
+
+      // Verify navigation to home page
+      expect(find.text('GymbrOS App'),
+          findsNothing); // Assuming "GymbrOS App" is the home title
+    });
+
+    testWidgets('navigates to signup page on link tap',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(createTestWidget(LoginPage()));
+
+      // Tap the signup link
       await tester.tap(find.text('Don\'t have an account? Create Account'));
-      await tester
-          .pumpAndSettle(); // This simulates the passage of time until all animations are complete.
+      await tester.pumpAndSettle();
 
-      // Check navigation to signup page; requires mock navigator setup.
+      // Verify navigation to signup page
+      expect(find.text('Sign Up'),
+          findsOneWidget); // Assuming "Sign Up" is on signup page
     });
   });
 }

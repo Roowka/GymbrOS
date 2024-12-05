@@ -48,7 +48,7 @@ class _MainNavigationState extends State<MainNavigation> {
 
   // List of widgets for each tab
   static const List<Widget> _pages = <Widget>[
-    MyHomePage(title: 'GymbrOS App'), // Page 0
+    MyHomePage(title: 'GymbrOS 🥇'), // Page 0
     SessionPage(), // Page 1
     ProgramPage(), // Page 2
     CalendarPage(), // Page 3 (Ajout de la page calendrier)

@@ -1,222 +1,200 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:gymbros/src/data/database/models/Session/session_model.dart';
 import 'package:gymbros/src/data/database/models/Exercise/exerciseSession_model.dart';
+import 'package:gymbros/src/shared/utils/constants.dart';
 
 class SessionStartedPage extends StatefulWidget {
   final Session session;
   final List<ExerciseSession> exercises;
 
   const SessionStartedPage({
-    super.key,
+    Key? key,
     required this.session,
     required this.exercises,
-  });
+  }) : super(key: key);
 
   @override
-  State<SessionStartedPage> createState() => _SessionStartedPageState();
+  _SessionStartedPageState createState() => _SessionStartedPageState();
 }
 
 class _SessionStartedPageState extends State<SessionStartedPage> {
+  late List<ExerciseSession> exerciseList;
   int currentExerciseIndex = 0;
   int currentSet = 1;
   bool isResting = false;
-  Timer? restTimer;
-  int remainingRestTime = 0;
+  int restTimeRemaining = 0; // Temps de repos restant
+  Timer? restTimer; // Timer pour gérer le compte à rebours
 
-  void _nextSetOrExercise() {
-    final currentExercise = widget.exercises[currentExerciseIndex];
+  @override
+  void initState() {
+    super.initState();
 
-    // Passer à la série suivante
-    if (currentSet < currentExercise.sets) {
-      setState(() {
-        currentSet++;
-        isResting = true;
-        remainingRestTime = currentExercise.restTime;
-      });
-
-      // Démarrer le compte à rebours pour le repos
-      _startRestTimer(() {
-        setState(() {
-          isResting = false;
-        });
-      });
-    }
-    // Passer à l'exercice suivant
-    else if (currentExerciseIndex < widget.exercises.length - 1) {
-      setState(() {
-        currentExerciseIndex++;
-        currentSet = 1;
-        isResting = true;
-        remainingRestTime = widget.exercises[currentExerciseIndex].restTime;
-      });
-
-      // Démarrer le compte à rebours pour le repos
-      _startRestTimer(() {
-        setState(() {
-          isResting = false;
-        });
-      });
-    }
-    // Fin de la séance
-    else {
-      _finishSession();
-    }
-  }
-
-  void _startRestTimer(VoidCallback onRestComplete) {
-    restTimer = Timer.periodic(
-      const Duration(seconds: 1),
-      (timer) {
-        if (remainingRestTime <= 0) {
-          timer.cancel();
-          onRestComplete();
-        } else {
-          setState(() {
-            remainingRestTime--;
-          });
-        }
-      },
-    );
-  }
-
-  void _finishSession() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => _SessionCompletedPage(
-          session: widget.session,
-        ),
-      ),
-    );
+    // Vérification si la liste d'exercices est vide
+    exerciseList = widget.exercises.isNotEmpty
+        ? widget.exercises
+        : _generateDefaultExercises(); // Générer des exercices par défaut si la liste est vide
   }
 
   @override
   void dispose() {
-    restTimer?.cancel();
+    restTimer?.cancel(); // Annuler le timer si la page est détruite
     super.dispose();
+  }
+
+  // Génère des exercices par défaut pour tester la page
+  List<ExerciseSession> _generateDefaultExercises() {
+    return [
+      ExerciseSession(
+        id: 1,
+        sessionId: widget.session.id!,
+        exerciseId: 1,
+        sets: 3,
+        repetitions: 10,
+        duration: 0,
+        restTime: 15,
+      ),
+      ExerciseSession(
+        id: 2,
+        sessionId: widget.session.id!,
+        exerciseId: 2,
+        sets: 2,
+        repetitions: 8,
+        duration: 0,
+        restTime: 10,
+      ),
+    ];
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.exercises.isEmpty) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.session.name),
-        ),
-        body: const Center(
-          child: Text(
-            "Aucun exercice associé à cette séance.",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-        ),
-      );
-    }
-
-    final currentExercise = widget.exercises[currentExerciseIndex];
-    final isTimeBased = currentExercise.repetitions == null;
+    final currentExercise = exerciseList[currentExerciseIndex];
 
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.session.name),
+        backgroundColor: AppColors.secondaryColor,
+        centerTitle: true,
       ),
-      body: isResting
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Temps de repos",
-                    style: TextStyle(fontSize: 24),
-                  ),
-                  Text(
-                    "$remainingRestTime secondes restantes",
-                    style: const TextStyle(fontSize: 32),
-                  ),
-                ],
-              ),
-            )
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Exercice : ${currentExercise.sessionId}",
-                    style: const TextStyle(fontSize: 24),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    "Série $currentSet/${currentExercise.sets}",
-                    style: const TextStyle(fontSize: 20),
-                  ),
-                  const SizedBox(height: 16),
-                  isTimeBased
-                      ? Text(
-                          "Durée : ${currentExercise.restTime} secondes",
-                          style: const TextStyle(fontSize: 20),
-                        )
-                      : Text(
-                          "Répétitions : ${currentExercise.repetitions}",
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                  const SizedBox(height: 32),
-                  ElevatedButton(
-                    onPressed: _nextSetOrExercise,
-                    child: const Text("Fini"),
-                  ),
-                ],
-              ),
-            ),
-    );
-  }
-}
-
-class _SessionCompletedPage extends StatelessWidget {
-  final Session session;
-
-  const _SessionCompletedPage({super.key, required this.session});
-
-  @override
-  Widget build(BuildContext context) {
-    final TextEditingController commentController = TextEditingController();
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Séance terminée"),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              "Félicitations !",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              "Vous avez terminé votre séance.",
-              style: TextStyle(fontSize: 20),
-            ),
-            const SizedBox(height: 32),
-            TextField(
-              controller: commentController,
-              decoration: const InputDecoration(
-                labelText: "Ajouter un commentaire",
-                border: OutlineInputBorder(),
+            if (!isResting) ...[
+              Text(
+                'Exercice : ${currentExercise.exerciseId}', // Remplacez par le nom réel de l'exercice
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context); // Retour à l'accueil
-              },
-              child: const Text("Terminer la séance"),
-            ),
+              const SizedBox(height: 20),
+              Text(
+                'Série : $currentSet/${currentExercise.sets}',
+                style: const TextStyle(fontSize: 20),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                currentExercise.repetitions > 0
+                    ? 'Répétitions : ${currentExercise.repetitions}'
+                    : 'Durée : ${currentExercise.duration} secondes',
+                style: const TextStyle(fontSize: 20),
+              ),
+              const SizedBox(height: 30),
+              ElevatedButton(
+                onPressed: _handleExerciseComplete,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                  textStyle: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                child: const Text('Fini'),
+              ),
+            ] else ...[
+              Text(
+                'Repos...',
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                '$restTimeRemaining secondes',
+                style: const TextStyle(
+                  fontSize: 40,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ],
         ),
       ),
+    );
+  }
+
+  // Gestion de la fin d'un exercice ou d'une série
+  void _handleExerciseComplete() {
+    final currentExercise = exerciseList[currentExerciseIndex];
+
+    if (currentSet < currentExercise.sets) {
+      setState(() {
+        isResting = true;
+        restTimeRemaining = currentExercise.restTime;
+      });
+      _startRestTimer();
+    } else if (currentExerciseIndex < exerciseList.length - 1) {
+      setState(() {
+        currentSet = 1;
+        currentExerciseIndex++;
+        isResting = false;
+      });
+    } else {
+      _finishSession();
+    }
+  }
+
+  // Démarre un compte à rebours pour le temps de repos
+  void _startRestTimer() {
+    restTimer?.cancel(); // Annuler tout timer existant
+    restTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (restTimeRemaining > 0) {
+          restTimeRemaining--;
+        } else {
+          timer.cancel();
+          isResting = false;
+          currentSet++;
+        }
+      });
+    });
+  }
+
+  // Affiche un message de fin de séance
+  void _finishSession() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Séance Terminée !'),
+          content: const Text(
+            'Bravo pour avoir terminé votre séance !',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, '/home');
+              },
+              child: const Text('Retour à l\'accueil'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -19,7 +19,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    final sessionProvider = Provider.of<SessionProvider>(context);
+    final sessionProvider =
+        Provider.of<SessionProvider>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
@@ -68,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Start Strong and Set Your Fitness Goals',
+            'Bon retour cher Gymbros, on fait quoi aujourd\'hui ? 💪',
             style: TextStyle(
               color: Colors.white,
               fontSize: 18,

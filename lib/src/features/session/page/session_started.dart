@@ -4,8 +4,8 @@ import 'package:gymbros/src/data/database/models/Session/session_model.dart';
 import 'package:gymbros/src/data/database/models/Exercise/exerciseSession_model.dart';
 
 class SessionStartedPage extends StatefulWidget {
-  final Session session; // La séance
-  final List<ExerciseSession> exercises; // Liste des exercices
+  final Session session;
+  final List<ExerciseSession> exercises;
 
   const SessionStartedPage({
     super.key,

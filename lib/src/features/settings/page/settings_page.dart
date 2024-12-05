@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gymbros/src/data/database/models/user_model.dart';
 import 'package:provider/provider.dart';
 import 'package:gymbros/src/features/providers/user_provider.dart';
 import 'package:gymbros/src/shared/utils/constants.dart';
@@ -10,12 +11,8 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
 
-    // Charger les données utilisateur si nécessaire
-    if (userProvider.user == null) {
-      userProvider.loadUser();
-    }
-
     final user = userProvider.user;
+    print("SETTINGS : ${user}");
 
     return Scaffold(
       appBar: AppBar(
